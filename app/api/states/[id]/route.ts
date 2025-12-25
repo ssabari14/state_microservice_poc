@@ -1,16 +1,18 @@
 import { NextResponse } from "next/server";
-import { statesCollection } from "../../../lib/collections";
 import { ObjectId } from "mongodb";
+import { statesCollection } from "../../../lib/collections";
 
 export async function PUT(
-  req: Request,
-  { params }: { params: { id: string } }
+  request: Request,
+  context: { params: { id: string } }
 ) {
-  const body = await req.json();
+  const body = await request.json();
+  const { id } = context.params;
+
   const collection = await statesCollection();
 
   await collection.updateOne(
-    { _id: new ObjectId(params.id) },
+    { _id: new ObjectId(id) },
     {
       $set: {
         name: body.name,
@@ -24,13 +26,14 @@ export async function PUT(
 }
 
 export async function DELETE(
-  req: Request,
-  { params }: { params: { id: string } }
+  request: Request,
+  context: { params: { id: string } }
 ) {
+  const { id } = context.params;
   const collection = await statesCollection();
 
   await collection.deleteOne({
-    _id: new ObjectId(params.id),
+    _id: new ObjectId(id),
   });
 
   return NextResponse.json({ success: true });
